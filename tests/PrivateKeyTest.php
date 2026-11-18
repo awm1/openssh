@@ -5,10 +5,11 @@ namespace PacoOrozco\OpenSSH\Tests;
 use PacoOrozco\OpenSSH\Exceptions\NoKeyLoadedException;
 use PacoOrozco\OpenSSH\PrivateKey;
 use PacoOrozco\OpenSSH\PublicKey;
+use PHPUnit\Framework\Attributes\Test;
 
 class PrivateKeyTest extends TestCase
 {
-    /** @test */
+    #[Test]
     public function it_should_throw_an_exception_if_key_is_not_valid()
     {
         $this->expectException(NoKeyLoadedException::class);
@@ -16,7 +17,7 @@ class PrivateKeyTest extends TestCase
         PrivateKey::fromString('invalid-key');
     }
 
-    /** @test */
+    #[Test]
     public function it_should_load_a_private_key_from_an_string()
     {
         $key = PrivateKey::fromString(file_get_contents($this->getStub('id_rsa')));
@@ -24,7 +25,7 @@ class PrivateKeyTest extends TestCase
         $this->assertInstanceOf(PrivateKey::class, $key);
     }
 
-    /** @test */
+    #[Test]
     public function it_should_load_a_private_key_from_a_file(): void
     {
         $key = PrivateKey::fromFile($this->getStub('id_rsa'));
@@ -32,7 +33,7 @@ class PrivateKeyTest extends TestCase
         $this->assertInstanceOf(PrivateKey::class, $key);
     }
 
-    /** @test */
+    #[Test]
     public function it_should_encrypt_and_decrypt_a_text()
     {
         $key = PrivateKey::fromFile($this->getStub('id_rsa'));
@@ -44,7 +45,7 @@ class PrivateKeyTest extends TestCase
         $this->assertEquals('foo bar baz', $key->decrypt($ciphertext));
     }
 
-    /** @test */
+    #[Test]
     public function it_should_return_the_associated_public_key()
     {
         $key = PrivateKey::fromFile($this->getStub('id_rsa'));
@@ -52,7 +53,7 @@ class PrivateKeyTest extends TestCase
         $this->assertInstanceOf(PublicKey::class, $key->getPublicKey());
     }
 
-    /** @test */
+    #[Test]
     public function it_should_write_the_key_to_a_file(): void
     {
         $filename = $this->getTempPath('testing_an_OpenSSH_key');
@@ -70,7 +71,7 @@ class PrivateKeyTest extends TestCase
         $this->assertEquals($originalText, $savedKey->decrypt($cipherText));
     }
 
-    /** @test */
+    #[Test]
     public function it_should_return_an_string_with_the_content_of_the_key(): void
     {
         $publicKey = PrivateKey::fromFile($this->getStub('id_rsa'));

@@ -6,25 +6,12 @@ use Illuminate\Support\Facades\Validator;
 use PacoOrozco\OpenSSH\PrivateKey;
 use PacoOrozco\OpenSSH\PublicKey;
 use PacoOrozco\OpenSSH\Rules\PublicKeyRule;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 
 class PublicKeyValidationRuleTest extends TestCase
 {
-    /**
-     * @test
-     * @dataProvider providesPublicKeyToTest
-     */
-    public function it_should_pass_when_key_is_public(
-        string $key,
-    ): void {
-        $validator = Validator::make(
-            ['key' => PublicKey::fromFile($this->getStub($key))],
-            ['key' => new PublicKeyRule()]
-        );
-
-        $this->assertTrue($validator->passes());
-    }
-
-    public function providesPublicKeyToTest(): \Generator
+    public static function providesPublicKeyToTest(): \Generator
     {
         yield 'RSA public key' => [
             'filename' => 'id_rsa.pub',
@@ -35,7 +22,20 @@ class PublicKeyValidationRuleTest extends TestCase
         ];
     }
 
-    /** @test */
+    #[Test]
+    #[DataProvider('providesPublicKeyToTest')]
+    public function it_should_pass_when_key_is_public(
+        string $filename,
+    ): void {
+        $validator = Validator::make(
+            ['key' => PublicKey::fromFile($this->getStub($filename))],
+            ['key' => new PublicKeyRule()]
+        );
+
+        $this->assertTrue($validator->passes());
+    }
+
+    #[Test]
     public function it_should_not_pass_when_key_is_not_public()
     {
         $validator = Validator::make(
@@ -46,7 +46,7 @@ class PublicKeyValidationRuleTest extends TestCase
         $this->assertFalse($validator->passes());
     }
 
-    /** @test */
+    #[Test]
     public function it_should_not_pass_when_key_is_null()
     {
         $validator = Validator::make(

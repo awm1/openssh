@@ -19,6 +19,7 @@ namespace PacoOrozco\OpenSSH\Tests;
 
 use PacoOrozco\OpenSSH\PrivateKey;
 use PacoOrozco\OpenSSH\PublicKey;
+use PHPUnit\Framework\Attributes\Test;
 
 class RSAKeyTest extends TestCase
 {
@@ -33,7 +34,7 @@ class RSAKeyTest extends TestCase
         $this->publicKey = PublicKey::fromFile($this->getStub('id_rsa.pub'));
     }
 
-    /** @test */
+    #[Test]
     public function a_public_key_can_be_used_to_encrypt_data_that_can_be_decrypted_by_a_private_key()
     {
         $originalData = 'secret data';
@@ -47,7 +48,7 @@ class RSAKeyTest extends TestCase
         $this->assertEquals($decryptedData, $originalData);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_sign_and_verify_a_message()
     {
         $signature = $this->privateKey->sign('my message');

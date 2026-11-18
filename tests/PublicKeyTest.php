@@ -4,30 +4,12 @@ namespace PacoOrozco\OpenSSH\Tests;
 
 use PacoOrozco\OpenSSH\Exceptions\NoKeyLoadedException;
 use PacoOrozco\OpenSSH\PublicKey;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 
 class PublicKeyTest extends TestCase
 {
-    /** @test */
-    public function it_should_throw_an_exception_if_key_is_not_valid()
-    {
-        $this->expectException(NoKeyLoadedException::class);
-
-        PublicKey::fromString('invalid-key');
-    }
-
-    /**
-     * @test
-     * @dataProvider providesPublicKeyToTest
-     */
-    public function it_should_load_a_public_key_from_an_string(
-        string $filename,
-    ) {
-        $key = PublicKey::fromString(file_get_contents($this->getStub($filename)));
-
-        $this->assertInstanceOf(PublicKey::class, $key);
-    }
-
-    public function providesPublicKeyToTest(): \Generator
+    public static function providesPublicKeyToTest(): \Generator
     {
         yield 'RSA public key' => [
             'filename' => 'id_rsa.pub',
@@ -46,33 +28,50 @@ class PublicKeyTest extends TestCase
         ];
     }
 
-    /**
-     * @test
-     * @dataProvider providesPublicKeyToTest
-     */
+    #[Test]
+    public function it_should_throw_an_exception_if_key_is_not_valid()
+    {
+        $this->expectException(NoKeyLoadedException::class);
+
+        PublicKey::fromString('invalid-key');
+    }
+
+    #[Test]
+    #[DataProvider('providesPublicKeyToTest')]
+    public function it_should_load_a_public_key_from_an_string(
+        string $filename,
+        array $fingerprints
+    ) {
+        $key = PublicKey::fromString(file_get_contents($this->getStub($filename)));
+
+        $this->assertInstanceOf(PublicKey::class, $key);
+    }
+
+    #[Test]
+    #[DataProvider('providesPublicKeyToTest')]
     public function it_should_load_a_public_key_from_a_file(
         string $filename,
+        array $fingerprints
     ): void {
         $key = PublicKey::fromFile($this->getStub($filename));
 
         $this->assertInstanceOf(PublicKey::class, $key);
     }
 
-    /**
-     * @test
-     * @dataProvider providesPublicKeyToTest
-     */
-    public function it_should_encrypt_a_text_using_RSA_public_key(): void
+    #[Test]
+    #[DataProvider('providesPublicKeyToTest')]
+    public function it_should_encrypt_a_text_using_RSA_public_key(
+        string $filename,
+        array $fingerprints
+    ): void
     {
         $key = PublicKey::fromFile($this->getStub('id_rsa.pub'));
 
         $this->assertNotEquals('foo bar baz', $key->encrypt('foo bar baz'));
     }
 
-    /**
-     * @test
-     * @dataProvider providesPublicKeyToTest
-     */
+    #[Test]
+    #[DataProvider('providesPublicKeyToTest')]
     public function it_should_get_the_sha256_fingerprint_of_a_key(
         string $filename,
         array $fingerprints,
@@ -82,10 +81,8 @@ class PublicKeyTest extends TestCase
         $this->assertEquals($fingerprints['sha256'], $key->getFingerPrint('sha256'));
     }
 
-    /**
-     * @test
-     * @dataProvider providesPublicKeyToTest
-     */
+    #[Test]
+    #[DataProvider('providesPublicKeyToTest')]
     public function it_should_get_the_md5_fingerprint_of_a_key(
         string $filename,
         array $fingerprints,

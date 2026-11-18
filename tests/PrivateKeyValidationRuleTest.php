@@ -6,10 +6,11 @@ use Illuminate\Support\Facades\Validator;
 use PacoOrozco\OpenSSH\PrivateKey;
 use PacoOrozco\OpenSSH\PublicKey;
 use PacoOrozco\OpenSSH\Rules\PrivateKeyRule;
+use PHPUnit\Framework\Attributes\Test;
 
 class PrivateKeyValidationRuleTest extends TestCase
 {
-    /** @test */
+    #[Test]
     public function it_should_pass_when_key_is_private()
     {
         $validator = Validator::make(
@@ -20,7 +21,7 @@ class PrivateKeyValidationRuleTest extends TestCase
         $this->assertTrue($validator->passes());
     }
 
-    /** @test */
+    #[Test]
     public function it_should_not_pass_when_key_is_not_private()
     {
         $validator = Validator::make(
@@ -31,7 +32,7 @@ class PrivateKeyValidationRuleTest extends TestCase
         $this->assertFalse($validator->passes());
     }
 
-    /** @test */
+    #[Test]
     public function it_should_not_pass_when_key_is_null()
     {
         $validator = Validator::make(
